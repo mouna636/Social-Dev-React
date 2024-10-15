@@ -20,7 +20,6 @@ export const AuthProvider = ({ children }) => {
         });
 
         setIsAuthenticated(true);
-        navigate('/');
       } catch (error) {
         setIsAuthenticated(false);
         // navigate('/login');
@@ -55,6 +54,9 @@ export const AuthProvider = ({ children }) => {
       await axios.post(
         `${process.env.REACT_APP_API_URL}/auth/register`,
         credentials,
+        {
+          withCredentials: true,
+        },
       );
 
       navigate('/login');

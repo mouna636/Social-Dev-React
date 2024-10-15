@@ -23,6 +23,7 @@ import { useAuth } from '../context/AuthContext';
 
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import ColorModeIconDropdown from '../shared-theme/ColorModeIconDropdown';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -96,118 +97,108 @@ export default function SignIn(props) {
     },
   });
   return (
-    <AppTheme {...props}>
-      <CssBaseline enableColorScheme />
-      <SignInContainer direction='column' justifyContent='space-between'>
-        <ColorModeSelect
-          sx={{ position: 'fixed', top: '1rem', right: '1rem' }}
-        />
-        <Card variant='outlined'>
-          {/* <SitemarkIcon /> */}
-          <Typography
-            component='h1'
-            variant='h4'
-            sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}
-          >
-            Sign in
-          </Typography>
-          <Box
-            component='form'
-            onSubmit={formik.handleSubmit}
-            noValidate
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              width: '100%',
-              gap: 2,
-            }}
-          >
-            <FormControl>
-              <FormLabel htmlFor='username'>Username</FormLabel>
-              <TextField
-                // error={usernameError}
-                // helperText={usernameErrorMessage}
-                id='username'
-                type='text'
-                name='username'
-                placeholder='username'
-                autoComplete='username'
-                autoFocus
-                required
-                fullWidth
-                variant='outlined'
-                error={
-                  formik.touched.username && Boolean(formik.errors.username)
-                }
-                helperText={formik.touched.username && formik.errors.username}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.username}
-              />
-            </FormControl>
-            <FormControl>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <FormLabel htmlFor='password'>Password</FormLabel>
-                <Link
-                  component='button'
-                  type='button'
-                  onClick={handleClickOpen}
-                  variant='body2'
-                  sx={{ alignSelf: 'baseline' }}
-                >
-                  Forgot your password?
-                </Link>
-              </Box>
-              <TextField
-                // error={passwordError}
-                // helperText={passwordErrorMessage}
-                name='password'
-                placeholder='••••••'
-                type='password'
-                id='password'
-                autoComplete='current-password'
-                autoFocus
-                required
-                fullWidth
-                variant='outlined'
-                error={
-                  formik.touched.password && Boolean(formik.errors.password)
-                }
-                helperText={formik.touched.password && formik.errors.password}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.password}
-              />
-            </FormControl>
-            <FormControlLabel
-              control={<Checkbox value='remember' color='primary' />}
-              label='Remember me'
-            />
-            <ForgotPassword open={open} handleClose={handleClose} />
-            <Button
-              type='submit'
-              fullWidth
-              variant='contained'
-              // onClick={validateInputs}
+    <Card variant='outlined'>
+      {/* <SitemarkIcon /> */}
+      <Typography
+        component='h1'
+        variant='h4'
+        sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}
+      >
+        Sign in
+      </Typography>
+      <Box
+        component='form'
+        onSubmit={formik.handleSubmit}
+        noValidate
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          width: '100%',
+          gap: 2,
+        }}
+      >
+        <FormControl>
+          <FormLabel htmlFor='username'>Username</FormLabel>
+          <TextField
+            // error={usernameError}
+            // helperText={usernameErrorMessage}
+            id='username'
+            type='text'
+            name='username'
+            placeholder='username'
+            autoComplete='username'
+            autoFocus
+            required
+            fullWidth
+            variant='outlined'
+            error={formik.touched.username && Boolean(formik.errors.username)}
+            helperText={formik.touched.username && formik.errors.username}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            value={formik.values.username}
+          />
+        </FormControl>
+        <FormControl>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+            <FormLabel htmlFor='password'>Password</FormLabel>
+            <Link
+              component='button'
+              type='button'
+              onClick={handleClickOpen}
+              variant='body2'
+              sx={{ alignSelf: 'baseline' }}
             >
-              Sign in
-            </Button>
-            <Typography sx={{ textAlign: 'center' }}>
-              Don&apos;t have an account?{' '}
-              <span>
-                <MUILink
-                  component={Link}
-                  to='/register'
-                  variant='body2'
-                  sx={{ alignSelf: 'center' }}
-                >
-                  Sign up
-                </MUILink>
-              </span>
-            </Typography>
+              Forgot your password?
+            </Link>
           </Box>
-          {/* <Divider>or</Divider> */}
-          {/* <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <TextField
+            // error={passwordError}
+            // helperText={passwordErrorMessage}
+            name='password'
+            placeholder='••••••'
+            type='password'
+            id='password'
+            autoComplete='current-password'
+            autoFocus
+            required
+            fullWidth
+            variant='outlined'
+            error={formik.touched.password && Boolean(formik.errors.password)}
+            helperText={formik.touched.password && formik.errors.password}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            value={formik.values.password}
+          />
+        </FormControl>
+        <FormControlLabel
+          control={<Checkbox value='remember' color='primary' />}
+          label='Remember me'
+        />
+        <ForgotPassword open={open} handleClose={handleClose} />
+        <Button
+          type='submit'
+          fullWidth
+          variant='contained'
+          // onClick={validateInputs}
+        >
+          Sign in
+        </Button>
+        <Typography sx={{ textAlign: 'center' }}>
+          Don&apos;t have an account?{' '}
+          <span>
+            <MUILink
+              component={Link}
+              to='/register'
+              variant='body2'
+              sx={{ alignSelf: 'center' }}
+            >
+              Sign up
+            </MUILink>
+          </span>
+        </Typography>
+      </Box>
+      {/* <Divider>or</Divider> */}
+      {/* <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <Button
               fullWidth
               variant='outlined'
@@ -225,8 +216,6 @@ export default function SignIn(props) {
               Sign in with Facebook
             </Button>
           </Box> */}
-        </Card>
-      </SignInContainer>
-    </AppTheme>
+    </Card>
   );
 }
