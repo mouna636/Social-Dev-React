@@ -15,12 +15,9 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await axios.get(
-          process.env.REACT_APP_API_URL + '/auth/profile',
-          {
-            withCredentials: true,
-          },
-        );
+        await axios.get(process.env.REACT_APP_API_URL + '/auth/profile', {
+          withCredentials: true,
+        });
 
         setIsAuthenticated(true);
         navigate('/');
@@ -53,6 +50,19 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const register = async (credentials) => {
+    try {
+      await axios.post(
+        `${process.env.REACT_APP_API_URL}/auth/register`,
+        credentials,
+      );
+
+      navigate('/login');
+    } catch (error) {
+      console.error('Registration failed', error);
+    }
+  };
+
   const logout = async () => {
     // try {
     //   await axios.post('/api/logout', {}, { withCredentials: true });
@@ -62,7 +72,9 @@ export const AuthProvider = ({ children }) => {
     // }
   };
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout, isLoading }}>
+    <AuthContext.Provider
+      value={{ isAuthenticated, login, register, isLoading }}
+    >
       {children}
     </AuthContext.Provider>
   );

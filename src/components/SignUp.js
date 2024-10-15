@@ -4,22 +4,18 @@ import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import CssBaseline from '@mui/material/CssBaseline';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import Divider from '@mui/material/Divider';
 import FormLabel from '@mui/material/FormLabel';
 import FormControl from '@mui/material/FormControl';
-import MUILink from '@mui/material/Link';
-import { Link } from 'react-router-dom';
-
+// import Link from '@mui/material/Link';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import MuiCard from '@mui/material/Card';
 import { styled } from '@mui/material/styles';
-import ForgotPassword from './ForgotPassword';
-import { GoogleIcon, FacebookIcon, SitemarkIcon } from './CustomIcons';
 import AppTheme from '../shared-theme/AppTheme';
 import ColorModeSelect from '../shared-theme/ColorModeSelect';
 import { useAuth } from '../context/AuthContext';
+import { Link } from 'react-router-dom';
 
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -43,7 +39,7 @@ const Card = styled(MuiCard)(({ theme }) => ({
   }),
 }));
 
-const SignInContainer = styled(Stack)(({ theme }) => ({
+const SignUpContainer = styled(Stack)(({ theme }) => ({
   minHeight: '100%',
   padding: theme.spacing(2),
   [theme.breakpoints.up('sm')]: {
@@ -65,40 +61,48 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
   },
 }));
 
-export default function SignIn(props) {
-  const { login } = useAuth();
+export default function SignUp(props) {
+  //   const [open, setOpen] = React.useState(false);
+  const { register } = useAuth();
+  //   const handleClickOpen = () => {
+  //     setOpen(true);
+  //   };
 
-  const [open, setOpen] = React.useState(false);
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
+  //   const handleClose = () => {
+  //     setOpen(false);
+  //   };
 
   const formik = useFormik({
     initialValues: {
       username: '',
+      firstname: '',
+      lastname: '',
+      email: '',
       password: '',
       remember: false,
     },
     validationSchema: Yup.object({
       username: Yup.string().required('Required'),
+      firstname: Yup.string().required('Required'),
+      lastname: Yup.string().required('Required'),
+      email: Yup.string().email('Invalid email address').required('Required'),
       password: Yup.string()
-        .min(4, 'Password must be at least 4 characters long')
+        .min(6, 'Password must be at least 6 characters long')
         .required('Required'),
     }),
+
     onSubmit: (values) => {
+      console.log('aa');
+
       console.log(values);
 
-      login(values);
+      register(values);
     },
   });
   return (
     <AppTheme {...props}>
       <CssBaseline enableColorScheme />
-      <SignInContainer direction='column' justifyContent='space-between'>
+      <SignUpContainer direction='column' justifyContent='space-between'>
         <ColorModeSelect
           sx={{ position: 'fixed', top: '1rem', right: '1rem' }}
         />
@@ -109,7 +113,7 @@ export default function SignIn(props) {
             variant='h4'
             sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}
           >
-            Sign in
+            Sign up
           </Typography>
           <Box
             component='form'
@@ -125,8 +129,6 @@ export default function SignIn(props) {
             <FormControl>
               <FormLabel htmlFor='username'>Username</FormLabel>
               <TextField
-                // error={usernameError}
-                // helperText={usernameErrorMessage}
                 id='username'
                 type='text'
                 name='username'
@@ -145,22 +147,73 @@ export default function SignIn(props) {
                 value={formik.values.username}
               />
             </FormControl>
+
             <FormControl>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <FormLabel htmlFor='password'>Password</FormLabel>
-                <Link
-                  component='button'
-                  type='button'
-                  onClick={handleClickOpen}
-                  variant='body2'
-                  sx={{ alignSelf: 'baseline' }}
-                >
-                  Forgot your password?
-                </Link>
-              </Box>
+              <FormLabel htmlFor='username'>First name</FormLabel>
               <TextField
-                // error={passwordError}
-                // helperText={passwordErrorMessage}
+                id='firstname'
+                type='text'
+                name='firstname'
+                placeholder='Firstname'
+                autoComplete='firstname'
+                autoFocus
+                required
+                fullWidth
+                variant='outlined'
+                error={
+                  formik.touched.firstname && Boolean(formik.errors.firstname)
+                }
+                helperText={formik.touched.firstname && formik.errors.firstname}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                value={formik.values.firstname}
+              />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel htmlFor='lastname'>Last name</FormLabel>
+              <TextField
+                id='lastname'
+                type='text'
+                name='lastname'
+                placeholder='Lastname'
+                autoComplete='lastname'
+                required
+                fullWidth
+                variant='outlined'
+                error={
+                  formik.touched.lastname && Boolean(formik.errors.lastname)
+                }
+                helperText={formik.touched.lastname && formik.errors.lastname}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                value={formik.values.lastname}
+              />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel htmlFor='email'>Email</FormLabel>
+              <TextField
+                id='email'
+                type='email'
+                name='email'
+                placeholder='Email'
+                autoComplete='email'
+                required
+                fullWidth
+                variant='outlined'
+                error={formik.touched.email && Boolean(formik.errors.email)}
+                helperText={formik.touched.email && formik.errors.email}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                value={formik.values.email}
+              />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel htmlFor='password'>Password</FormLabel>
+
+              <TextField
                 name='password'
                 placeholder='••••••'
                 type='password'
@@ -179,54 +232,21 @@ export default function SignIn(props) {
                 value={formik.values.password}
               />
             </FormControl>
-            <FormControlLabel
-              control={<Checkbox value='remember' color='primary' />}
-              label='Remember me'
-            />
-            <ForgotPassword open={open} handleClose={handleClose} />
-            <Button
-              type='submit'
-              fullWidth
-              variant='contained'
-              // onClick={validateInputs}
-            >
-              Sign in
+
+            <Button type='submit' fullWidth variant='contained'>
+              Sign up
             </Button>
             <Typography sx={{ textAlign: 'center' }}>
-              Don&apos;t have an account?{' '}
+              Have an account?
               <span>
-                <MUILink
-                  component={Link}
-                  to='/register'
-                  variant='body2'
-                  sx={{ alignSelf: 'center' }}
-                >
-                  Sign up
-                </MUILink>
+                <Link to='/login' variant='body2' sx={{ alignSelf: 'center' }}>
+                  Sign in
+                </Link>
               </span>
             </Typography>
           </Box>
-          {/* <Divider>or</Divider> */}
-          {/* <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Button
-              fullWidth
-              variant='outlined'
-              onClick={() => alert('Sign in with Google')}
-              startIcon={<GoogleIcon />}
-            >
-              Sign in with Google
-            </Button>
-            <Button
-              fullWidth
-              variant='outlined'
-              onClick={() => alert('Sign in with Facebook')}
-              startIcon={<FacebookIcon />}
-            >
-              Sign in with Facebook
-            </Button>
-          </Box> */}
         </Card>
-      </SignInContainer>
+      </SignUpContainer>
     </AppTheme>
   );
 }
