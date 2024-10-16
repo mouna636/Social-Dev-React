@@ -1,6 +1,5 @@
 // src/context/AuthContext.js
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import axiosInstance from '../api/axiosInstance';
@@ -20,7 +19,6 @@ export const AuthProvider = ({ children }) => {
         setIsAuthenticated(true);
       } catch (error) {
         setIsAuthenticated(false);
-        // navigate('/login');
       } finally {
         setIsLoading(false);
       }
@@ -50,14 +48,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = async () => {
-    // try {
-    //   await axios.post('/api/logout', {}, { withCredentials: true });
-    //   setIsAuthenticated(false);
-    // } catch (error) {
-    //   console.error('Logout failed', error);
-    // }
-  };
+  const logout = async () => {};
   return (
     <AuthContext.Provider
       value={{ isAuthenticated, login, register, isLoading }}

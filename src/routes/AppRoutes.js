@@ -38,12 +38,11 @@ const AppRoutes = () => {
         <Route path='' element={<Dashboard />}>
           <Route index element={<MainGrid />} />
           <Route path='users' element={<UsersGrid />} />
-          {/* Add other nested routes here */}
         </Route>
       </Route>
-      <Route path='/' element={<ProtectedRoute />}>
-        <Route path='' element={<Home />} />
-      </Route>
+
+      <Route path='/register' element={<SignUp />} />
+      <Route path='/' element={<Home />} />
     </Routes>
   );
 };
