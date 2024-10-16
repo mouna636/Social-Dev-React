@@ -9,6 +9,7 @@ import PublicRoute from './PublicRoute';
 import UsersGrid from '../pages/dashboard/components/UsersGrid';
 import MainGrid from '../pages/dashboard/components/MainGrid';
 import AuthLayout from '../Layout/AuthLayout';
+import NotAuthorized from '../components/NotAuthorized/NotAuthorized';
 const AppRoutes = () => {
   return (
     <Routes>
@@ -31,6 +32,7 @@ const AppRoutes = () => {
           </AuthLayout>
         }
       />
+      <Route path='/not-authorized' element={<NotAuthorized />}></Route>
 
       <Route path='/dashboard' element={<ProtectedRoute />}>
         <Route path='' element={<Dashboard />}>

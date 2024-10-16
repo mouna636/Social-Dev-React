@@ -3,6 +3,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
+import axiosInstance from '../api/axiosInstance';
 
 const AuthContext = createContext();
 
@@ -15,10 +16,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        await axios.get(process.env.REACT_APP_API_URL + '/auth/profile', {
-          withCredentials: true,
-        });
-
+        await axiosInstance.get('/auth/profile');
         setIsAuthenticated(true);
       } catch (error) {
         setIsAuthenticated(false);
@@ -33,14 +31,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (credentials) => {
     try {
-      console.log(`${process.env.REACT_APP_API_URL}/auth/login`);
-      const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/auth/login`,
-        credentials,
-        {
-          withCredentials: true,
-        },
-      );
+      await axiosInstance.post('/auth/login', credentials);
 
       setIsAuthenticated(true);
       navigate('/');
@@ -51,13 +42,7 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (credentials) => {
     try {
-      await axios.post(
-        `${process.env.REACT_APP_API_URL}/auth/register`,
-        credentials,
-        {
-          withCredentials: true,
-        },
-      );
+      await axiosInstance.post('/auth/register', credentials);
 
       navigate('/login');
     } catch (error) {
