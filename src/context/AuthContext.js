@@ -55,6 +55,9 @@ export const AuthProvider = ({ children }) => {
       await axios.post(
         `${process.env.REACT_APP_API_URL}/auth/register`,
         credentials,
+        {
+          withCredentials: true,
+        },
       );
 
       navigate('/login');
