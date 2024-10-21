@@ -4,6 +4,8 @@ import SignIn from '../components/SignIn';
 import SignUp from '../components/SignUp';
 import ProtectedRoute from './ProtectedRoute';
 import Home from '../components/Home';
+import MessageInput from '../components/MessageInput';
+import AddPost from '../components/AddPost';
 import Dashboard from '../pages/dashboard/Dashboard';
 import PublicRoute from './PublicRoute';
 import UsersGrid from '../pages/dashboard/components/UsersGrid';
@@ -40,9 +42,12 @@ const AppRoutes = () => {
           <Route path='users' element={<UsersGrid />} />
         </Route>
       </Route>
-
+     
       <Route path='/register' element={<SignUp />} />
       <Route path='/' element={<Home />} />
+      <Route path='messageInput' element={< MessageInput/>} />
+      <Route path='AddPost' element={<AddPost />} />
+      
     </Routes>
   );
 };

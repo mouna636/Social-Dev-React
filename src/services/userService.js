@@ -1,5 +1,5 @@
 // src/services/userService.js
-import axios from 'axios';
+
 import axiosInstance from '../api/axiosInstance';
 
 const API_URL = process.env.REACT_APP_API_URL;

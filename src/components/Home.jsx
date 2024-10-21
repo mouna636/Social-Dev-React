@@ -11,11 +11,11 @@ import {
   import { useMemo, useState } from "react";
   import getDesignTokens from "./styles/MyTheme";
   import MyList from "../components/List";
-  import Posts from "../components/Posts";
+  import PostsDisplay from "./PostsDisplay";
   import RightBar from "../components/RightBar";
-  
+import AddPost from "../components/AddPost"
   // Styled Paper component with themed background
-  const StyledPaper = styled(Paper)(({ theme }) => ({
+ styled(Paper)(({ theme }) => ({
     backgroundColor:
       theme.palette.mode === "dark" ? theme.palette.primary.main : theme.palette.background.paper,
     ...theme.typography.body2,
@@ -47,9 +47,12 @@ import {
               showList={showList}
               setshowList={setshowList}
             />
-            <Posts />
+            <PostsDisplay />
             <RightBar theme={theme} />
           </Stack>
+          
+          <AddPost />
+
         </Box>
       </ThemeProvider>
     );
