@@ -104,46 +104,7 @@ const PostsDisplay = () => {
               {new Date(post.createdAt).toLocaleString()}
             </Typography>
           </CardContent>
-          <CardActions disableSpacing sx={{ display: 'flex', justifyContent: 'space-between' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Checkbox
-                icon={<FavoriteBorder />}
-                checkedIcon={<Favorite sx={{ color: "red" }} />}
-                checked={post.liked}
-                onClick={() => handleLike(post.id)}
-                sx={{ "&:hover": { cursor: "pointer" } }}
-              />
-              <Typography variant="body2" sx={{ mr: 1 }}>{post.likes} Likes</Typography>
-
-              <IconButton onClick={() => handleDislike(post.id)}>
-                {post.disliked ? <ThumbDown sx={{ color: "blue" }} /> : <ThumbDownOffAlt />}
-              </IconButton>
-              <Typography variant="body2" sx={{ marginLeft: 0.5 }}>{post.dislikes} Dislikes</Typography>
-            </Box>
-
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', ml: 2 }}>
-                <IconButton onClick={() => {
-                  setCurrentPostId(post.id);
-                  setIsOpen(true);
-                }}>
-                  <Add />
-                </IconButton>
-                <Typography variant="body2" sx={{ marginLeft: 0.5 }}>Commenter</Typography>
-              </Box>
-
-              <IconButton onClick={() => toggleComments(post.id)}>
-                <Comment />
-              </IconButton>
-              <Tooltip title="Voir les commentaires">
-                <Box sx={{ display: 'flex', alignItems: 'center', ml: 0.5 }}>
-                  <Typography variant="body2" sx={{ display: 'inline', ml: 0.5 }}>
-                    {post.comments ? post.comments.length : 0}
-                  </Typography>
-                </Box>
-              </Tooltip>
-            </Box>
-          </CardActions>
+         
 
           {expandedPostId === post.id && (
             <Box sx={{ mt: 2, ml: 2 }}>
