@@ -104,7 +104,6 @@ const PostsDisplay = () => {
               {new Date(post.createdAt).toLocaleString()}
             </Typography>
           </CardContent>
-         
 
           {expandedPostId === post.id && (
             <Box sx={{ mt: 2, ml: 2 }}>
