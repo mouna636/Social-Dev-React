@@ -8,9 +8,9 @@ import '@fontsource/inter/700.css'; // Bold
 import '@fontsource/inter/800.css'; // Extra Bold
 import '@fontsource/inter/900.css';
 import AppRoutes from './routes/AppRoutes';
+
 function App() {
   return <AppRoutes />;
-  // return <SignIn />;
 }
 
 export default App;

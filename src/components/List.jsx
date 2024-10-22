@@ -1,4 +1,4 @@
-import { Box, Button, List, Switch, styled } from "@mui/material";
+import { Box, List, Switch, styled } from "@mui/material";
 import React from "react";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
@@ -7,11 +7,10 @@ import ListItemText from "@mui/material/ListItemText";
 import {
   AccountBox,
   Article,
-  DarkMode,
+ 
   Group,
   Home,
-  LightMode,
-  ModeNight,
+
   Person,
   Settings,
   Storefront,
@@ -72,6 +71,7 @@ const MyList = ({ setmyMOde, theme, showList, setshowList }) => {
     { title: "Friends", icon: <Person /> },
     { title: "Settings", icon: <Settings /> },
     { title: "Profile", icon: <AccountBox /> },
+    
   ];
 
   return (
