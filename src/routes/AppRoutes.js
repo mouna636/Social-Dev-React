@@ -10,6 +10,8 @@ import UsersGrid from '../pages/dashboard/components/UsersGrid';
 import MainGrid from '../pages/dashboard/components/MainGrid';
 import AuthLayout from '../Layout/AuthLayout';
 import NotAuthorized from '../components/NotAuthorized/NotAuthorized';
+import Profile from '../components/profile/Profile.jsx';
+
 const AppRoutes = () => {
   return (
     <Routes>
@@ -39,6 +41,10 @@ const AppRoutes = () => {
           <Route index element={<MainGrid />} />
           <Route path='users' element={<UsersGrid />} />
         </Route>
+      </Route>
+
+      <Route path='/profile' element={<ProtectedRoute />}>
+        <Route path=':id' element={<Profile />} />
       </Route>
 
       <Route path='/register' element={<SignUp />} />
