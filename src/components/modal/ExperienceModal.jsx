@@ -9,6 +9,8 @@ import {
   TextField,
   Typography,
   Box,
+  FormControlLabel,
+  Checkbox,
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -21,31 +23,64 @@ const validationSchema = yup.object({
   title: yup.string().required('Job Title is required'),
   company: yup.string().required('Company is required'),
   startDate: yup.date().required('Start Date is required'),
-  endDate: yup.date().required('End Date is required'),
+  endDate: yup
+    .date()
+    .nullable()
+    .when('currentlyWorking', {
+      is: (value) => value === false,
+      then: () => yup.date().required('End Date is required'),
+    }),
   description: yup.string().required('Description is required'),
 });
 
-export default function TransitionsModal({ open, onClose, onAdd }) {
+export default function TransitionsModal({
+  open,
+  onClose,
+  onAdd,
+  onEdit,
+  experience,
+}) {
+  const isEdit = Boolean(experience);
+
+  React.useEffect(() => {
+    console.log(experience);
+  }, [experience]);
+
   const formik = useFormik({
     initialValues: {
-      title: '',
-      company: '',
-      startDate: dayjs().format('YYYY-MM-DD'),
-      endDate: dayjs().format('YYYY-MM-DD'),
-      description: '',
+      title: experience?.title || '',
+      company: experience?.company || '',
+      startDate: experience
+        ? dayjs(experience.startDate).format('YYYY-MM-DD')
+        : dayjs().format('YYYY-MM-DD'),
+      endDate: experience ? dayjs(experience.endDate).format('YYYY-MM-DD') : '',
+
+      description: experience?.description || '',
+      currentlyWorking: experience ? !experience.endDate : false,
     },
     validationSchema: validationSchema,
+    enableReinitialize: true,
     onSubmit: (values) => {
       const newExperience = { ...values };
-      onAdd(newExperience);
-
-      // formik.resetForm();
+      if (isEdit) {
+        onEdit({ ...newExperience, id: experience.id });
+      } else {
+        onAdd(newExperience);
+      }
     },
   });
 
   const closeModal = () => {
     onClose();
     formik.resetForm();
+  };
+
+  const handleCheckboxChange = (event) => {
+    const { checked } = event.target;
+    formik.setFieldValue('currentlyWorking', checked);
+    if (checked) {
+      formik.setFieldValue('endDate', '');
+    }
   };
 
   return (
@@ -60,7 +95,7 @@ export default function TransitionsModal({ open, onClose, onAdd }) {
         <Fade in={open}>
           <ModalContent>
             <Typography variant='h6' id='transition-modal-title'>
-              Add Experience
+              {isEdit ? 'Edit Experience' : 'Add Experience'}
             </Typography>
             <form onSubmit={formik.handleSubmit}>
               <TextField
@@ -113,33 +148,46 @@ export default function TransitionsModal({ open, onClose, onAdd }) {
                   )}
                 />
               </Box>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={formik.values.currentlyWorking}
+                    onChange={handleCheckboxChange}
+                    name='currentlyWorking'
+                  />
+                }
+                label='I am currently working here'
+              />
+
               <Box sx={{ marginBottom: 1 }}>
                 <DatePicker
                   label='End Date'
-                  value={dayjs(formik.values.endDate)}
+                  value={
+                    formik.values.endDate ? dayjs(formik.values.endDate) : null
+                  }
+                  disabled={formik.values.currentlyWorking}
                   onChange={(date) =>
                     formik.setFieldValue(
                       'endDate',
-                      dayjs(date).format('YYYY-MM-DD'),
+                      date ? dayjs(date).format('YYYY-MM-DD') : null,
                     )
                   }
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      name='endDate'
-                      onBlur={formik.handleBlur}
-                      fullWidth
-                      margin='normal'
-                      error={
-                        formik.touched.endDate && Boolean(formik.errors.endDate)
-                      }
-                      helperText={
-                        formik.touched.endDate && formik.errors.endDate
-                      }
-                    />
-                  )}
+                  slotProps={{
+                    textField: {
+                      name: 'endDate',
+                      onBlur: formik.handleBlur,
+                      fullWidth: true,
+                      margin: 'normal',
+                      error:
+                        formik.touched.endDate &&
+                        Boolean(formik.errors.endDate),
+                      helperText:
+                        formik.touched.endDate && formik.errors.endDate,
+                    },
+                  }}
                 />
               </Box>
+
               <TextField
                 label='Description'
                 name='description'
@@ -164,7 +212,7 @@ export default function TransitionsModal({ open, onClose, onAdd }) {
                 color='primary'
                 sx={{ marginTop: 2 }}
               >
-                Add Experience
+                {isEdit ? 'Save Changes' : 'Add Experience'}
               </Button>
               <Button onClick={closeModal} sx={{ marginTop: 2, marginLeft: 2 }}>
                 Close
@@ -181,6 +229,8 @@ TransitionsModal.propTypes = {
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   onAdd: PropTypes.func.isRequired,
+  onEdit: PropTypes.func.isRequired,
+  experience: PropTypes.object,
 };
 
 const Modal = styled(BaseModal)`

@@ -3,12 +3,24 @@ import Grid from '@mui/material/Grid2';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Copyright from '../internals/components/Copyright';
-import CustomizedDataGrid from './CustomizedDataGrid';
+import CustomizedDataGrid from './CustomizedDataGridV2';
 
-import { getUsers } from '../../../services/userService';
+import {
+  getUsers,
+  updateUser,
+  deleteUser,
+} from '../../../services/userService';
+import ConfirmModal from '../../../components/modal/ConfirmModal';
+import { useState } from 'react';
 
 export default function UsersGrid() {
-  const [users, setUsers] = React.useState([]);
+  const [users, setUsers] = useState([]);
+  const [openModal, setOpenModal] = useState(false);
+  const [modalConfig, setModalConfig] = useState({
+    title: '',
+    description: '',
+    handleConfirm: null,
+  });
 
   React.useEffect(() => {
     const fetchUsers = async () => {
@@ -23,25 +35,49 @@ export default function UsersGrid() {
 
     fetchUsers();
   }, []);
-  const columns = [
-    { field: 'id', headerName: 'ID', width: 90 },
-    { field: 'username', headerName: 'Username', width: 150 },
-    { field: 'firstname', headerName: 'First Name', width: 150 },
-    { field: 'lastname', headerName: 'Last Name', width: 150 },
-    { field: 'email', headerName: 'Email', width: 200 },
-    {
-      field: 'role',
-      headerName: 'Role',
-      width: 150,
-      valueGetter: (params) => params.name,
-    },
-  ];
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+  };
+
+  const openDeleteModal = (row) => {
+    console.log('Row to delete:', row);
+
+    setModalConfig({
+      title: 'DELETE',
+      description: `Are you sure you want to delete ${
+        row.firstname + ' ' + row.lastname
+      }?`,
+      handleConfirm: () => handleUserDelete(row),
+    });
+    setOpenModal(true);
+  };
+
+  const handleUserDelete = async (row) => {
+    try {
+      const res = await deleteUser(row.id);
+      setUsers((oldUsers) => oldUsers.filter((user) => user.id !== row.id));
+      console.log(res);
+    } catch (error) {
+      console.log(error);
+    }
+    handleCloseModal();
+  };
 
   return (
     <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' } }}>
       <Typography component='h2' variant='h6' sx={{ mb: 2 }}>
         Overview
       </Typography>
+
+      <ConfirmModal
+        title={modalConfig.title}
+        description={modalConfig.description}
+        handleClose={handleCloseModal}
+        handleConfirm={modalConfig.handleConfirm}
+        open={openModal}
+      />
+
       <Grid
         container
         spacing={2}
@@ -52,7 +88,10 @@ export default function UsersGrid() {
           Details
         </Typography>
         <Grid container spacing={2} columns={12}>
-          <CustomizedDataGrid columns={columns} rows={users} />
+          <CustomizedDataGrid
+            initialRows={users}
+            onOpenDeleteModal={openDeleteModal}
+          />
         </Grid>
       </Grid>
       <Copyright sx={{ my: 4 }} />

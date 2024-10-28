@@ -8,14 +8,17 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true); // Add loading state
+  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState({});
 
   const navigate = useNavigate();
 
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        await axiosInstance.get('/auth/profile');
+        const resp = await axiosInstance.get('/auth/profile');
+        setUser(resp.data);
+
         setIsAuthenticated(true);
       } catch (error) {
         setIsAuthenticated(false);
@@ -48,10 +51,20 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = async () => {};
+  const logout = async () => {
+    try {
+      const response = await axiosInstance.post('/auth/logout');
+      console.log(response.data);
+
+      setIsAuthenticated(false);
+      setUser({});
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
+  };
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, login, register, isLoading }}
+      value={{ isAuthenticated, user, login, register, logout, isLoading }}
     >
       {children}
     </AuthContext.Provider>

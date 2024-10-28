@@ -7,7 +7,8 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import MenuContent from './MenuContent';
 import OptionsMenu from './OptionsMenu';
-
+import { useAuth } from '../../../context/AuthContext';
+import { getUserByUsername } from '../../../services/userService';
 const drawerWidth = 240;
 
 const Drawer = styled(MuiDrawer)({
@@ -22,6 +23,20 @@ const Drawer = styled(MuiDrawer)({
 });
 
 export default function SideMenu() {
+  const { user, logout } = useAuth();
+  const [userId, setUserId] = React.useState(null);
+  React.useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await getUserByUsername(user.username);
+        setUserId(res.data.id);
+      } catch (error) {
+        console.error('Error fetching user:', error);
+      }
+    };
+    fetchUser();
+  }, [user]);
+
   return (
     <Drawer
       variant='permanent'
@@ -56,7 +71,7 @@ export default function SideMenu() {
       >
         <Avatar
           sizes='small'
-          alt='Riley Carter'
+          alt={user.fullname}
           src='/static/images/avatar/7.jpg'
           sx={{ width: 36, height: 36 }}
         />
@@ -65,13 +80,13 @@ export default function SideMenu() {
             variant='body2'
             sx={{ fontWeight: 500, lineHeight: '16px' }}
           >
-            Riley Carter
+            {user.fullname}
           </Typography>
           <Typography variant='caption' sx={{ color: 'text.secondary' }}>
-            riley@email.com
+            {user.email}
           </Typography>
         </Box>
-        <OptionsMenu />
+        <OptionsMenu userId={userId} logout={logout} />
       </Stack>
     </Drawer>
   );

@@ -17,12 +17,10 @@ import MuiCard from '@mui/material/Card';
 import { styled } from '@mui/material/styles';
 import ForgotPassword from './ForgotPassword';
 
-
 import { useAuth } from '../context/AuthContext';
 
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -69,6 +67,7 @@ export default function SignIn(props) {
   const { login } = useAuth();
 
   const [open, setOpen] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -89,10 +88,15 @@ export default function SignIn(props) {
         .min(4, 'Password must be at least 4 characters long')
         .required('Required'),
     }),
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       console.log(values);
-
-      login(values);
+      try {
+        setLoading(true);
+        await login(values);
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+      }
     },
   });
   return (
@@ -178,6 +182,7 @@ export default function SignIn(props) {
           type='submit'
           fullWidth
           variant='contained'
+          disabled={loading}
           // onClick={validateInputs}
         >
           Sign in

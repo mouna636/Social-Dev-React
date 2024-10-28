@@ -22,6 +22,17 @@ export const getUserById = async (id) => {
   }
 };
 
+export const getUserByUsername = async (id) => {
+  try {
+    const response = await axiosInstance.get(`/users/find/${id}`);
+
+    return response;
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    throw error;
+  }
+};
+
 export const createUser = async (data) => {
   try {
     await axiosInstance.post('/users', data);
@@ -35,9 +46,15 @@ export const updateUser = async (user) => {
   try {
     const res = await axiosInstance.put(`/users/${user.id}`, user);
     console.log(res);
-
-    alert('User profile updated successfully');
   } catch (error) {
     console.error('Error updating profile:', error);
+  }
+};
+
+export const deleteUser = async (id) => {
+  try {
+    await axiosInstance.delete(`/users/${id}`);
+  } catch (error) {
+    console.error('Error deleting profile:', error);
   }
 };

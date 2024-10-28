@@ -10,24 +10,39 @@ import ListItemIcon, { listItemIconClasses } from '@mui/material/ListItemIcon';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import MenuButton from './MenuButton';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../../context/AuthContext';
 
 const MenuItem = styled(MuiMenuItem)({
   margin: '2px 0',
 });
 
-export default function OptionsMenu() {
+export default function OptionsMenu({ userId, logout }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
+  const navigate = useNavigate();
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const handleNavigation = (path) => {
+    switch (path) {
+      case 'profile':
+        console.log(userId);
+
+        navigate('/profile/' + userId);
+      default:
+        return;
+    }
+  };
+
   return (
     <React.Fragment>
       <MenuButton
-        aria-label="Open menu"
+        aria-label='Open menu'
         onClick={handleClick}
         sx={{ borderColor: 'transparent' }}
       >
@@ -35,7 +50,7 @@ export default function OptionsMenu() {
       </MenuButton>
       <Menu
         anchorEl={anchorEl}
-        id="menu"
+        id='menu'
         open={open}
         onClose={handleClose}
         onClick={handleClose}
@@ -53,14 +68,14 @@ export default function OptionsMenu() {
           },
         }}
       >
-        <MenuItem onClick={handleClose}>Profile</MenuItem>
+        <MenuItem onClick={() => handleNavigation('profile')}>Profile</MenuItem>
         <MenuItem onClick={handleClose}>My account</MenuItem>
         <Divider />
         <MenuItem onClick={handleClose}>Add another account</MenuItem>
         <MenuItem onClick={handleClose}>Settings</MenuItem>
         <Divider />
         <MenuItem
-          onClick={handleClose}
+          onClick={logout}
           sx={{
             [`& .${listItemIconClasses.root}`]: {
               ml: 'auto',
@@ -70,7 +85,7 @@ export default function OptionsMenu() {
         >
           <ListItemText>Logout</ListItemText>
           <ListItemIcon>
-            <LogoutRoundedIcon fontSize="small" />
+            <LogoutRoundedIcon fontSize='small' />
           </ListItemIcon>
         </MenuItem>
       </Menu>
