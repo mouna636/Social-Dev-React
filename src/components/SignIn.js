@@ -1,64 +1,64 @@
-import * as React from 'react';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
+import * as React from "react";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Checkbox from "@mui/material/Checkbox";
 
-import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControlLabel from "@mui/material/FormControlLabel";
 
-import FormLabel from '@mui/material/FormLabel';
-import FormControl from '@mui/material/FormControl';
-import MUILink from '@mui/material/Link';
-import { Link } from 'react-router-dom';
+import FormLabel from "@mui/material/FormLabel";
+import FormControl from "@mui/material/FormControl";
+import MUILink from "@mui/material/Link";
+import { Link } from "react-router-dom";
 
-import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
-import Stack from '@mui/material/Stack';
-import MuiCard from '@mui/material/Card';
-import { styled } from '@mui/material/styles';
-import ForgotPassword from './ForgotPassword';
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+import Stack from "@mui/material/Stack";
+import MuiCard from "@mui/material/Card";
+import { styled } from "@mui/material/styles";
+import ForgotPassword from "./ForgotPassword";
 
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from "../context/AuthContext";
 
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
 const Card = styled(MuiCard)(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  alignSelf: 'center',
-  width: '100%',
+  display: "flex",
+  flexDirection: "column",
+  alignSelf: "center",
+  width: "100%",
   padding: theme.spacing(4),
   gap: theme.spacing(2),
-  margin: 'auto',
-  [theme.breakpoints.up('sm')]: {
-    maxWidth: '450px',
+  margin: "auto",
+  [theme.breakpoints.up("sm")]: {
+    maxWidth: "450px",
   },
   boxShadow:
-    'hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px',
-  ...theme.applyStyles('dark', {
+    "hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px",
+  ...theme.applyStyles("dark", {
     boxShadow:
-      'hsla(220, 30%, 5%, 0.5) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.08) 0px 15px 35px -5px',
+      "hsla(220, 30%, 5%, 0.5) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.08) 0px 15px 35px -5px",
   }),
 }));
 
 styled(Stack)(({ theme }) => ({
-  minHeight: '100%',
+  minHeight: "100%",
   padding: theme.spacing(2),
-  [theme.breakpoints.up('sm')]: {
+  [theme.breakpoints.up("sm")]: {
     padding: theme.spacing(4),
   },
-  '&::before': {
+  "&::before": {
     content: '""',
-    display: 'block',
-    position: 'absolute',
+    display: "block",
+    position: "absolute",
     zIndex: -1,
     inset: 0,
     backgroundImage:
-      'radial-gradient(ellipse at 50% 50%, hsl(210, 100%, 97%), hsl(0, 0%, 100%))',
-    backgroundRepeat: 'no-repeat',
-    ...theme.applyStyles('dark', {
+      "radial-gradient(ellipse at 50% 50%, hsl(210, 100%, 97%), hsl(0, 0%, 100%))",
+    backgroundRepeat: "no-repeat",
+    ...theme.applyStyles("dark", {
       backgroundImage:
-        'radial-gradient(at 50% 50%, hsla(210, 100%, 16%, 0.5), hsl(220, 30%, 5%))',
+        "radial-gradient(at 50% 50%, hsla(210, 100%, 16%, 0.5), hsl(220, 30%, 5%))",
     }),
   },
 }));
@@ -68,6 +68,7 @@ export default function SignIn(props) {
 
   const [open, setOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState(null);
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -78,15 +79,15 @@ export default function SignIn(props) {
 
   const formik = useFormik({
     initialValues: {
-      username: '',
-      password: '',
+      username: "",
+      password: "",
       remember: false,
     },
     validationSchema: Yup.object({
-      username: Yup.string().required('Required'),
+      username: Yup.string().required("Required"),
       password: Yup.string()
-        .min(4, 'Password must be at least 4 characters long')
-        .required('Required'),
+        .min(4, "Password must be at least 4 characters long")
+        .required("Required"),
     }),
     onSubmit: async (values) => {
       console.log(values);
@@ -95,45 +96,47 @@ export default function SignIn(props) {
         await login(values);
         setLoading(false);
       } catch (error) {
+        console.log(error.response.data.message);
+        setError(error.response.data.message);
         setLoading(false);
       }
     },
   });
   return (
-    <Card variant='outlined'>
+    <Card variant="outlined">
       {/* <SitemarkIcon /> */}
       <Typography
-        component='h1'
-        variant='h4'
-        sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}
+        component="h1"
+        variant="h4"
+        sx={{ width: "100%", fontSize: "clamp(2rem, 10vw, 2.15rem)" }}
       >
         Sign in
       </Typography>
       <Box
-        component='form'
+        component="form"
         onSubmit={formik.handleSubmit}
         noValidate
         sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          width: '100%',
+          display: "flex",
+          flexDirection: "column",
+          width: "100%",
           gap: 2,
         }}
       >
         <FormControl>
-          <FormLabel htmlFor='username'>Username</FormLabel>
+          <FormLabel htmlFor="username">Username</FormLabel>
           <TextField
             // error={usernameError}
             // helperText={usernameErrorMessage}
-            id='username'
-            type='text'
-            name='username'
-            placeholder='username'
-            autoComplete='username'
+            id="username"
+            type="text"
+            name="username"
+            placeholder="username"
+            autoComplete="username"
             autoFocus
             required
             fullWidth
-            variant='outlined'
+            variant="outlined"
             error={formik.touched.username && Boolean(formik.errors.username)}
             helperText={formik.touched.username && formik.errors.username}
             onChange={formik.handleChange}
@@ -142,14 +145,14 @@ export default function SignIn(props) {
           />
         </FormControl>
         <FormControl>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-            <FormLabel htmlFor='password'>Password</FormLabel>
+          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            <FormLabel htmlFor="password">Password</FormLabel>
             <Link
-              component='button'
-              type='button'
+              component="button"
+              type="button"
               onClick={handleClickOpen}
-              variant='body2'
-              sx={{ alignSelf: 'baseline' }}
+              variant="body2"
+              sx={{ alignSelf: "baseline" }}
             >
               Forgot your password?
             </Link>
@@ -157,15 +160,15 @@ export default function SignIn(props) {
           <TextField
             // error={passwordError}
             // helperText={passwordErrorMessage}
-            name='password'
-            placeholder='••••••'
-            type='password'
-            id='password'
-            autoComplete='current-password'
+            name="password"
+            placeholder="••••••"
+            type="password"
+            id="password"
+            autoComplete="current-password"
             autoFocus
             required
             fullWidth
-            variant='outlined'
+            variant="outlined"
             error={formik.touched.password && Boolean(formik.errors.password)}
             helperText={formik.touched.password && formik.errors.password}
             onChange={formik.handleChange}
@@ -173,28 +176,27 @@ export default function SignIn(props) {
             value={formik.values.password}
           />
         </FormControl>
-        <FormControlLabel
-          control={<Checkbox value='remember' color='primary' />}
-          label='Remember me'
-        />
+        <Typography variant="body2" textAlign={"center"} color="error">
+          {error}
+        </Typography>
         <ForgotPassword open={open} handleClose={handleClose} />
         <Button
-          type='submit'
+          type="submit"
           fullWidth
-          variant='contained'
+          variant="contained"
           disabled={loading}
           // onClick={validateInputs}
         >
           Sign in
         </Button>
-        <Typography sx={{ textAlign: 'center' }}>
-          Don&apos;t have an account?{' '}
+        <Typography sx={{ textAlign: "center" }}>
+          Don&apos;t have an account?{" "}
           <span>
             <MUILink
               component={Link}
-              to='/register'
-              variant='body2'
-              sx={{ alignSelf: 'center' }}
+              to="/register"
+              variant="body2"
+              sx={{ alignSelf: "center" }}
             >
               Sign up
             </MUILink>

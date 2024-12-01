@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from "axios";
 
 const axiosInstance = axios.create({
   baseURL: process.env.REACT_APP_API_URL,
@@ -11,11 +11,13 @@ axiosInstance.interceptors.response.use(
   },
   (error) => {
     console.log(error);
-    if (error.response && error.response.status === 403) {
-      window.location.href = '/not-authorized';
+    if (!error.response) {
+      console.log("Network error. Please check your internet connection.");
+    } else if (error.response.status === 403) {
+      window.location.href = "/not-authorized";
     }
     return Promise.reject(error);
-  },
+  }
 );
 
 export default axiosInstance;

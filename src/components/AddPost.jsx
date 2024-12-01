@@ -19,34 +19,36 @@ import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import ImageIcon from "@mui/icons-material/Image";
 import DateRangeIcon from "@mui/icons-material/DateRange";
 import io from "socket.io-client";
-
+import { useAuth } from "../context/AuthContext";
 
 const socket = io("http://localhost:8001");
 
 const AddPost = () => {
   const theme = useTheme();
   const [isOpen, setIsOpen] = useState(false);
-  const [content, setContent] = useState(""); 
+  const [content, setContent] = useState("");
+  const { isAuthenticated } = useAuth();
 
   const handleSendPost = () => {
     if (content.trim()) {
-  
       socket.emit("message", content);
-      setContent(""); 
-      setIsOpen(false); 
+      setContent("");
+      setIsOpen(false);
     }
   };
 
   return (
     <>
-      <Tooltip
-        sx={{ position: "fixed", bottom: "22px", left: "22px" }}
-        title="Add Post"
-      >
-        <Fab onClick={() => setIsOpen(true)} color="primary">
-          <AddIcon />
-        </Fab>
-      </Tooltip>
+      {isAuthenticated && (
+        <Tooltip
+          sx={{ position: "fixed", bottom: "22px", left: "22px" }}
+          title="Add Post"
+        >
+          <Fab onClick={() => setIsOpen(true)} color="primary">
+            <AddIcon />
+          </Fab>
+        </Tooltip>
+      )}
 
       <Modal
         open={isOpen}

@@ -11,11 +11,29 @@ import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import MailIcon from "@mui/icons-material/Mail";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import MoreIcon from "@mui/icons-material/MoreVert";
-import { Avatar } from "@mui/material";
+import {
+  Avatar,
+  Button,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+} from "@mui/material";
+import { useAuth } from "../context/AuthContext";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  acceptConnection,
+  acceptRequest,
+  declineRequest,
+  getPendingConnections,
+  rejectRequest,
+} from "../services/userService";
+import { Cancel, CheckCircle } from "@mui/icons-material";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -47,7 +65,6 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   color: "inherit",
   "& .MuiInputBase-input": {
     padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
     transition: theme.transitions.create("width"),
     width: "100%",
@@ -60,11 +77,45 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 const AppBarr = ({ showList, setshowList }) => {
   const refMenuMobile = useRef(null);
   const [showMobileMenu, setshowMobileMenu] = useState(false);
+  const refFriendRequestsAnchor = useRef(null);
 
   const refMenuBiggerScreen = useRef(null);
   const [showBiggerScreenMenu, setshowBiggerScreenMenu] = useState(false);
+  const [showFriendRequests, setShowFriendRequests] = useState(false); // State to toggle friend requests list
+  const {
+    logout,
+    fullUser,
+    isAuthenticated,
+    onAcceptRequest,
+    newFriendRequest,
+    setNewFriendRequest,
+  } = useAuth();
+  const [friendRequests, setFriendRequests] = useState([]);
+  const navigate = useNavigate();
 
-  const renderMenu = (
+  const handleProfile = () => {
+    console.log(fullUser.id);
+    navigate("/profile/" + fullUser.id);
+  };
+
+  React.useEffect(() => {
+    console.log(isAuthenticated);
+  }, [isAuthenticated]);
+
+  React.useEffect(() => {
+    const fetchRequests = async () => {
+      try {
+        const res = await getPendingConnections(fullUser.id);
+        setFriendRequests(res);
+      } catch (error) {
+        console.error("Error fetching friend requests:", error);
+      }
+    };
+
+    fetchRequests();
+  }, [fullUser.id, newFriendRequest]);
+
+  const renderMenu = isAuthenticated && (
     <Menu
       anchorEl={refMenuBiggerScreen.current}
       open={showBiggerScreenMenu}
@@ -72,24 +123,96 @@ const AppBarr = ({ showList, setshowList }) => {
         setshowBiggerScreenMenu(false);
       }}
     >
-      <MenuItem
-        onClick={() => {
-          setshowBiggerScreenMenu(false);
-        }}
-      >
-        Profile
-      </MenuItem>
-      <MenuItem
-        onClick={() => {
-          setshowBiggerScreenMenu(false);
-        }}
-      >
-        My account
-      </MenuItem>
+      <MenuItem onClick={handleProfile}>Profile</MenuItem>
+      <MenuItem onClick={logout}>Logout</MenuItem>
+    </Menu>
+  );
+  const FriendRequestItem = ({ request }) => {
+    return (
+      <ListItem key={request.id} alignItems="center">
+        {/* Displaying Avatar with Profile Image */}
+        <ListItemAvatar>
+          <Avatar
+            alt={`${request.sender.firstname} ${request.sender.lastname}`}
+            src={request.sender.profilePicture}
+          />
+        </ListItemAvatar>
+
+        {/* Displaying the Sender's Name */}
+        <ListItemText
+          primary={`${request.sender.firstname} ${request.sender.lastname}`}
+          secondary={request.sender.email} // Optional: you can display the email or other details
+        />
+
+        {/* Accept & Decline with Icons */}
+        <IconButton
+          color="success"
+          size="small"
+          aria-label="accept friend request"
+          style={{ marginLeft: "10px", marginRight: "10px" }}
+          onClick={() => handleRequest(request, "accept")}
+          title="Accept Friend Request"
+        >
+          <CheckCircle />
+        </IconButton>
+
+        <IconButton
+          color="danger"
+          size="small"
+          aria-label="decline friend request"
+          onClick={() => handleRequest(request, "decline")}
+          title="Decline Friend Request"
+        >
+          <Cancel />
+        </IconButton>
+      </ListItem>
+    );
+  };
+
+  const handleRequest = (request, action) => {
+    switch (action) {
+      case "accept":
+        acceptRequest(request.id);
+        alert("Friend request accepted successfully");
+        setFriendRequests(
+          friendRequests.filter((req) => req.id !== request.id)
+        );
+        setShowFriendRequests(false);
+        onAcceptRequest(request);
+        break;
+      case "decline":
+        rejectRequest(request.id);
+        alert("Friend request declined successfully");
+        setFriendRequests(
+          friendRequests.filter((req) => req.id !== request.id)
+        );
+        setShowFriendRequests(false);
+        break;
+      default:
+        console.error("Invalid action:", action);
+    }
+  };
+
+  const handleFriendRequestsClick = () => {
+    setShowFriendRequests(!showFriendRequests);
+    if (newFriendRequest) {
+      setNewFriendRequest(false);
+    }
+  };
+
+  const renderFriendRequestsList = (
+    <Menu
+      anchorEl={refFriendRequestsAnchor.current}
+      open={showFriendRequests}
+      onClose={() => setShowFriendRequests(false)}
+    >
+      <List>
+        {friendRequests?.map((request) => FriendRequestItem({ request }))}
+      </List>
     </Menu>
   );
 
-  const renderMobileMenu = (
+  const renderMobileMenu = isAuthenticated && (
     <Menu
       anchorEl={refMenuMobile.current}
       open={showMobileMenu}
@@ -97,6 +220,26 @@ const AppBarr = ({ showList, setshowList }) => {
         setshowMobileMenu(false);
       }}
     >
+      {/* <MenuItem>
+        <IconButton
+          size="large"
+          aria-label="show 4 friend requests"
+          color="inherit"
+          onClick={() => setShowFriendRequests(!showFriendRequests)}
+        >
+          <Badge badgeContent={4} color="error">
+            <PersonAddIcon />
+          </Badge>
+        </IconButton>
+        <p>Friend Requests</p>
+        {showFriendRequests && (
+          <div>
+            <p>Friend Request 1</p>
+            <p>Friend Request 2</p>
+            <p>Friend Request 3</p>
+          </div>
+        )}
+      </MenuItem> */}
       <MenuItem>
         <IconButton size="large" aria-label="show 4 new mails" color="inherit">
           <Badge badgeContent={4} color="error">
@@ -173,46 +316,80 @@ const AppBarr = ({ showList, setshowList }) => {
 
         <Box sx={{ flexGrow: 1 }} />
 
-        <Box sx={{ alignItems: "center", display: { xs: "none", md: "flex" } }}>
-          <IconButton
-            sx={{ width: "37px", height: "37px" }}
-            size="large"
-            aria-label="show 4 new mails"
-            color="inherit"
+        {isAuthenticated && (
+          <Box
+            sx={{ alignItems: "center", display: { xs: "none", md: "flex" } }}
           >
-            <Badge badgeContent={4} color="error">
-              <MailIcon />
-            </Badge>
-          </IconButton>
-
-          <IconButton
-            sx={{ width: "37px", height: "37px" }}
-            size="large"
-            aria-label="show 17 new notifications"
-            color="inherit"
-          >
-            <Badge badgeContent={17} color="error">
-              <NotificationsIcon />
-            </Badge>
-          </IconButton>
-
-          <IconButton
-            ref={refMenuBiggerScreen}
-            size="large"
-            edge="end"
-            aria-label="account of current user"
-            aria-haspopup="true"
-            onClick={() => {
-              setshowBiggerScreenMenu(!showBiggerScreenMenu);
-            }}
-            color="inherit"
-          >
-            <Avatar
+            <IconButton
+              ref={refFriendRequestsAnchor}
               sx={{ width: "37px", height: "37px" }}
-              src="./imges/Ali Hassan.JPG"
-            />
-          </IconButton>
-        </Box>
+              size="large"
+              aria-label="show friend requests"
+              color="inherit"
+              onClick={handleFriendRequestsClick}
+            >
+              <Badge
+                badgeContent={
+                  newFriendRequest
+                    ? friendRequests?.length + 1
+                    : friendRequests?.length
+                }
+                color="error"
+              >
+                <PersonAddIcon />
+              </Badge>
+            </IconButton>
+
+            <IconButton
+              sx={{ width: "37px", height: "37px" }}
+              size="large"
+              aria-label="show 4 new mails"
+              color="inherit"
+            >
+              <Badge badgeContent={4} color="error">
+                <MailIcon />
+              </Badge>
+            </IconButton>
+
+            <IconButton
+              sx={{ width: "37px", height: "37px" }}
+              size="large"
+              aria-label="show 17 new notifications"
+              color="inherit"
+            >
+              <Badge badgeContent={17} color="error">
+                <NotificationsIcon />
+              </Badge>
+            </IconButton>
+
+            <IconButton
+              ref={refMenuBiggerScreen}
+              size="large"
+              edge="end"
+              aria-label="account of current user"
+              aria-haspopup="true"
+              onClick={() => {
+                setshowBiggerScreenMenu(!showBiggerScreenMenu);
+              }}
+              color="inherit"
+            >
+              <Avatar
+                sx={{ width: "37px", height: "37px" }}
+                src="./imges/Ali Hassan.JPG"
+              />
+            </IconButton>
+          </Box>
+        )}
+
+        {!isAuthenticated && (
+          <Box
+            sx={{ display: { xs: "none", md: "flex" }, alignItems: "center" }}
+          >
+            <Button color="inherit" component={Link} to="/login">
+              Login
+            </Button>
+          </Box>
+        )}
 
         <Box sx={{ display: { xs: "flex", md: "none" } }}>
           <IconButton
@@ -229,6 +406,7 @@ const AppBarr = ({ showList, setshowList }) => {
           </IconButton>
         </Box>
       </Toolbar>
+      {renderFriendRequestsList}
 
       {renderMobileMenu}
       {renderMenu}

@@ -1,172 +1,128 @@
-import { Box, Typography } from "@mui/material";
 import React from "react";
-import Avatar from "@mui/material/Avatar";
-import AvatarGroup from "@mui/material/AvatarGroup";
-import ImageList from "@mui/material/ImageList";
-import ImageListItem from "@mui/material/ImageListItem";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import Divider from "@mui/material/Divider";
-import ListItemText from "@mui/material/ListItemText";
-import ListItemAvatar from "@mui/material/ListItemAvatar";
+import { Box, Tooltip, Typography, Avatar } from "@mui/material";
+import { useAuth } from "../context/AuthContext";
 
+const RightBar = () => {
+  const { fullUser, activeUsers } = useAuth();
 
-const itemData = [
-  {
-    img: "https://images.pexels.com/photos/2995336/pexels-photo-2995336.jpeg",
-    title: "Breakfast",
-  },
-  {
-    img: "https://images.pexels.com/photos/3933239/pexels-photo-3933239.jpeg",
-    title: "Burger",
-  },
-  {
-    img: "https://images.pexels.com/photos/3934003/pexels-photo-3934003.jpeg",
-    title: "Camera",
-  },
-];
+  const isUserOnline = (userId) => activeUsers.includes(userId);
 
-const showLG = { xs: "none", lg: "block" }
-
-const RightBar = ({ theme }) => {
   return (
     <Box
       sx={{
-        display: showLG,
-        flexGrow: "auto",
-        bgcolor: theme.palette.favColor.main,
-        pl: 2,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        backgroundColor: "#f5f5f5",
+        borderRadius: 2,
+        p: 3,
+        boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+        width: "100%",
+        maxWidth: 400, // Limit the width for better UI
       }}
-      component="section"
     >
-      <Typography sx={{ fontWeight: 300 }} mt={2} variant="h6">
-        Online Frinds
-      </Typography>
-      <AvatarGroup sx={{ justifyContent: "center", my: 2 }} total={24}>
-        <Avatar
-          sx={{ width: 49, height: 45 }}
-          alt="Travis Howard"
-          src="https://images.pexels.com/photos/3662979/pexels-photo-3662979.jpeg"
-        />
-
-        <Avatar
-          sx={{ width: 49, height: 45 }}
-          alt="Remy Sharp"
-          src="https://images.pexels.com/photos/1516196/pexels-photo-1516196.jpeg"
-        />
-
-        <Avatar
-          sx={{ width: 49, height: 45 }}
-          alt="Agnes Walker"
-          src="https://images.pexels.com/photos/4029925/pexels-photo-4029925.jpeg"
-        />
-        <Avatar
-          sx={{ width: 49, height: 45 }}
-          alt="Trevor Henderson"
-          src="https://images.pexels.com/photos/5951914/pexels-photo-5951914.jpeg"
-        />
-      </AvatarGroup>
-
-      <Typography sx={{ fontWeight: 300 }} my={2} variant="h6">
-        Latest Photo
-      </Typography>
-
-      <ImageList
-        gap={10}
-        sx={{ width: 500, height: 160, overflowY: "hidden" }}
-        cols={3}
-        rowHeight={99}
+      <Typography
+        variant="h6"
+        sx={{
+          mb: 2,
+          color: "#333",
+          fontWeight: "bold",
+          textAlign: "center",
+        }}
       >
-        {itemData.map((item) => (
-          <ImageListItem key={item.img}>
-            <img
-              style={{ borderRadius: "5px" }}
-              src={`${item.img}?w=164&h=164&fit=crop&auto=format`}
-              srcSet={`${item.img}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-              alt={item.title}
-              loading="lazy"
-            />
-          </ImageListItem>
-        ))}
-      </ImageList>
-
-      <Typography sx={{ fontWeight: 300 }} mb={1} mt={4} variant="h6">
-        Latest Conversation
+        Connections
       </Typography>
 
-      <List sx={{ width: "100%", maxWidth: 488, bgcolor: "background.paper" }}>
-        <ListItem alignItems="flex-start">
-          <ListItemAvatar>
-            <Avatar
-              alt="Remy Sharp"
-              src="https://images.pexels.com/photos/7365020/pexels-photo-7365020.jpeg"
-            />
-          </ListItemAvatar>
-          <ListItemText
-            primary="Brunch this weekend?"
-            secondary={
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
+          width: "100%",
+        }}
+      >
+        {fullUser?.connections?.map((user) => (
+          <Box
+            key={user.username}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 2,
+              p: 1,
+              borderRadius: 1,
+              backgroundColor: "#fff",
+              boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)",
+            }}
+          >
+            <Tooltip title={user.username}>
+              <Avatar
+                sx={{
+                  width: 48,
+                  height: 48,
+                  cursor: "pointer",
+                  transition: "transform 0.2s",
+                  "&:hover": {
+                    transform: "scale(1.1)",
+                  },
+                }}
+                alt={user.username}
+                src={`https://i.pravatar.cc/150?img=${Math.floor(
+                  Math.random() * 70
+                )}`}
+              />
+            </Tooltip>
+
+            <Box sx={{ flex: 1 }}>
               <Typography
-                sx={{ display: "inline" }}
-                component="span"
-                variant="body2"
-                color="text.primary"
+                variant="body1"
+                sx={{
+                  fontWeight: 500,
+                  color: "#333",
+                  whiteSpace: "nowrap",
+                  textOverflow: "ellipsis",
+                  overflow: "hidden",
+                }}
               >
-                Ali Connors — I'll be in your neighborhood doing errands
+                {user.firstname} {user.lastname}
               </Typography>
-            }
-          />
-        </ListItem>
-        <Divider variant="inset" component="li" />
-        <ListItem alignItems="flex-start">
-          <ListItemAvatar>
-            <Avatar
-              alt="Travis Howard"
-              src="https://images.pexels.com/photos/8669022/pexels-photo-8669022.jpeg"
-            />
-          </ListItemAvatar>
-          <ListItemText
-            primary="Summer BBQ"
-            secondary={
-              <React.Fragment>
-                <Typography
-                  sx={{ display: "inline" }}
-                  component="span"
-                  variant="body2"
-                  color="text.primary"
-                >
-                  to Scott, Alex, Jennifer
-                </Typography>
-                {" — Wish I could come"}
-              </React.Fragment>
-            }
-          />
-        </ListItem>
-        <Divider variant="inset" component="li" />
-        <ListItem alignItems="flex-start">
-          <ListItemAvatar>
-            <Avatar
-              alt="Cindy Baker"
-              src="https://images.pexels.com/photos/8101622/pexels-photo-8101622.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-            />
-          </ListItemAvatar>
-          <ListItemText
-            primary="Oui Oui"
-            secondary={
-              <React.Fragment>
-                <Typography
-                  sx={{ display: "inline" }}
-                  component="span"
-                  variant="body2"
-                  color="text.primary"
-                >
-                  Sandra Adams
-                </Typography>
-                {" — Do you have Paris recommendations?"}
-              </React.Fragment>
-            }
-          />
-        </ListItem>
-      </List>
+            </Box>
+
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
+              }}
+            >
+              <Box
+                sx={{
+                  width: 12,
+                  height: 12,
+                  borderRadius: "50%",
+                  marginRight: 3,
+                  backgroundColor: isUserOnline(user.id)
+                    ? "#4caf50"
+                    : "#f44336",
+                }}
+              />
+            </Box>
+          </Box>
+        ))}
+      </Box>
+
+      <Typography
+        sx={{
+          color: "#555",
+          fontSize: "0.875rem",
+          fontWeight: 500,
+          textAlign: "center",
+          mt: 3,
+        }}
+      >
+        {`Active Connections: ${
+          activeUsers.filter((u) => u !== fullUser.id)?.length
+        }`}
+      </Typography>
     </Box>
   );
 };
