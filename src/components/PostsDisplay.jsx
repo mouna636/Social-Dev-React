@@ -10,6 +10,8 @@ import {
   Modal,
   Snackbar,
   Tooltip,
+  CardHeader,
+  Avatar,
 } from "@mui/material";
 import {
   Favorite,
@@ -21,6 +23,7 @@ import {
 } from "@mui/icons-material";
 import MessageInput from "./MessageInput";
 import io from "socket.io-client";
+import { useAuth } from "../context/AuthContext";
 
 const socket = io("http://localhost:8001");
 
@@ -29,11 +32,13 @@ const PostsDisplay = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [currentPostId, setCurrentPostId] = useState(null);
   const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarMessage, setSnackbarMessage] = useState("");
   const [expandedPostId, setExpandedPostId] = useState(null);
-
+  const { fullUser } = useAuth();
   useEffect(() => {
     socket.on("posts", (newPosts) => {
+      console.log("Posts received:", newPosts);
+
       setPosts(newPosts);
     });
 
@@ -43,25 +48,30 @@ const PostsDisplay = () => {
 
     socket.on("postLiked", (updatedPost) => {
       setPosts((prevPosts) =>
-        prevPosts.map((post) => (post.id === updatedPost.id ? updatedPost : post))
+        prevPosts.map((post) =>
+          post.id === updatedPost.id ? updatedPost : post
+        )
       );
     });
 
     socket.on("postDisliked", (updatedPost) => {
       setPosts((prevPosts) =>
-        prevPosts.map((post) => (post.id === updatedPost.id ? updatedPost : post))
+        prevPosts.map((post) =>
+          post.id === updatedPost.id ? updatedPost : post
+        )
       );
     });
 
     socket.on("commentAdded", (updatedPost) => {
       setPosts((prevPosts) =>
-        prevPosts.map((post) => (post.id === updatedPost.id ? updatedPost : post))
+        prevPosts.map((post) =>
+          post.id === updatedPost.id ? updatedPost : post
+        )
       );
       setSnackbarMessage("Commentaire ajouté !");
       setOpenSnackbar(true);
     });
 
-  
     socket.emit("fetchPosts");
 
     return () => {
@@ -82,8 +92,12 @@ const PostsDisplay = () => {
   };
 
   const handleCommentSubmit = (comment) => {
-    socket.emit("addComment", { postId: currentPostId, content: comment });
-    setIsOpen(false); 
+    socket.emit("addComment", {
+      postId: currentPostId,
+      userId: fullUser.id,
+      content: comment,
+    });
+    setIsOpen(false);
   };
 
   const handleCloseSnackbar = () => {
@@ -97,15 +111,40 @@ const PostsDisplay = () => {
   return (
     <Box component="main" sx={{ flexGrow: 1, p: 2 }}>
       {posts.map((post) => (
-        <Card key={post.id} sx={{ maxWidth: { xs: "97%", sm: 444 }, mx: "auto", my: 2 }}>
+        <Card
+          key={post.id}
+          sx={{ maxWidth: { xs: "97%", sm: 444 }, mx: "auto", my: 2 }}
+        >
+          <CardHeader
+            avatar={
+              <Avatar
+                alt={post.user?.firstname} // Assuming post.authorName holds the user's name
+              />
+            }
+            title={
+              <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
+                {post.user?.username} {/* Display the post author's name */}
+              </Typography>
+            }
+            subheader={
+              <Typography variant="caption" color="text.secondary">
+                {new Date(post.createdAt).toLocaleString()}{" "}
+                {/* Post creation date */}
+              </Typography>
+            }
+          />
+
           <CardContent>
             <Typography variant="body1">{post.content}</Typography>
             <Typography variant="caption" color="text.secondary">
               {new Date(post.createdAt).toLocaleString()}
             </Typography>
           </CardContent>
-          <CardActions disableSpacing sx={{ display: 'flex', justifyContent: 'space-between' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <CardActions
+            disableSpacing
+            sx={{ display: "flex", justifyContent: "space-between" }}
+          >
+            <Box sx={{ display: "flex", alignItems: "center" }}>
               <Checkbox
                 icon={<FavoriteBorder />}
                 checkedIcon={<Favorite sx={{ color: "red" }} />}
@@ -113,31 +152,46 @@ const PostsDisplay = () => {
                 onClick={() => handleLike(post.id)}
                 sx={{ "&:hover": { cursor: "pointer" } }}
               />
-              <Typography variant="body2" sx={{ mr: 1 }}>{post.likes} Likes</Typography>
+              <Typography variant="body2" sx={{ mr: 1 }}>
+                {post.likes} Likes
+              </Typography>
 
               <IconButton onClick={() => handleDislike(post.id)}>
-                {post.disliked ? <ThumbDown sx={{ color: "blue" }} /> : <ThumbDownOffAlt />}
+                {post.disliked ? (
+                  <ThumbDown sx={{ color: "blue" }} />
+                ) : (
+                  <ThumbDownOffAlt />
+                )}
               </IconButton>
-              <Typography variant="body2" sx={{ marginLeft: 0.5 }}>{post.dislikes} Dislikes</Typography>
+              <Typography variant="body2" sx={{ marginLeft: 0.5 }}>
+                {post.dislikes} Dislikes
+              </Typography>
             </Box>
 
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', ml: 2 }}>
-                <IconButton onClick={() => {
-                  setCurrentPostId(post.id);
-                  setIsOpen(true);
-                }}>
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Box sx={{ display: "flex", alignItems: "center", ml: 2 }}>
+                <IconButton
+                  onClick={() => {
+                    setCurrentPostId(post.id);
+                    setIsOpen(true);
+                  }}
+                >
                   <Add />
                 </IconButton>
-                <Typography variant="body2" sx={{ marginLeft: 0.5 }}>Commenter</Typography>
+                <Typography variant="body2" sx={{ marginLeft: 0.5 }}>
+                  Commenter
+                </Typography>
               </Box>
 
               <IconButton onClick={() => toggleComments(post.id)}>
                 <Comment />
               </IconButton>
               <Tooltip title="Voir les commentaires">
-                <Box sx={{ display: 'flex', alignItems: 'center', ml: 0.5 }}>
-                  <Typography variant="body2" sx={{ display: 'inline', ml: 0.5 }}>
+                <Box sx={{ display: "flex", alignItems: "center", ml: 0.5 }}>
+                  <Typography
+                    variant="body2"
+                    sx={{ display: "inline", ml: 0.5 }}
+                  >
                     {post.comments ? post.comments.length : 0}
                   </Typography>
                 </Box>
@@ -147,22 +201,26 @@ const PostsDisplay = () => {
 
           {expandedPostId === post.id && (
             <Box sx={{ mt: 2, ml: 2 }}>
-              {post.comments && post.comments.map((comment, index) => (
-                <Box key={index} sx={{
-                  padding: 1,
-                  marginBottom: 1,
-                  borderRadius: 2,
-                  border: "1px solid #e0e0e0",
-                  backgroundColor: "#f9f9f9",
-                }}>
-                  <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-                    {comment.author}:
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {comment.content}
-                  </Typography>
-                </Box>
-              ))}
+              {post.comments &&
+                post.comments.map((comment, index) => (
+                  <Box
+                    key={index}
+                    sx={{
+                      padding: 1,
+                      marginBottom: 1,
+                      borderRadius: 2,
+                      border: "1px solid #e0e0e0",
+                      backgroundColor: "#f9f9f9",
+                    }}
+                  >
+                    <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                      {comment.user.username}:
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {comment.content}
+                    </Typography>
+                  </Box>
+                ))}
             </Box>
           )}
         </Card>
@@ -193,7 +251,7 @@ const PostsDisplay = () => {
             Ajouter un commentaire
           </Typography>
 
-          <MessageInput 
+          <MessageInput
             onSubmit={handleCommentSubmit}
             onClose={() => setIsOpen(false)}
           />

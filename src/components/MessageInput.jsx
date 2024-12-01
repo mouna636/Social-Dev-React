@@ -1,15 +1,16 @@
-
 import React, { useState } from "react";
 import { TextField, Button, Stack, Avatar, Typography } from "@mui/material";
+import { useAuth } from "../context/AuthContext";
 
 const MessageInput = ({ onSubmit, onClose }) => {
-  const [commentText, setCommentText] = useState('');
+  const [commentText, setCommentText] = useState("");
+  const { fullUser } = useAuth();
 
   const handleCommentSubmit = () => {
     if (commentText.trim()) {
-      onSubmit(commentText); 
-      setCommentText(''); 
-      onClose(); 
+      onSubmit(commentText);
+      setCommentText("");
+      onClose();
     }
   };
 
@@ -18,9 +19,11 @@ const MessageInput = ({ onSubmit, onClose }) => {
       <Stack direction="row" alignItems="center">
         <Avatar
           sx={{ mr: 2 }}
-          src="https://i.pinimg.com/474x/1b/61/45/1b614533bde5ad1760664fd6c35dd895.jpg" 
+          src="https://i.pinimg.com/474x/1b/61/45/1b614533bde5ad1760664fd6c35dd895.jpg"
         />
-        <Typography variant="body1">Votre Nom</Typography>
+        <Typography variant="body1">
+          {fullUser.firstname + " " + fullUser.lastname}
+        </Typography>
       </Stack>
 
       <TextField

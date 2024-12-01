@@ -77,14 +77,13 @@ const ProfilePage = () => {
     setModalOpen(false);
   };
   const [isPending, setIsPending] = useState(false);
-  const getPendingConn = async () => {
+  const getPendingConn = async (userId, fullUserId) => {
     try {
-      const connections = await getPendingConnections(id);
+      const connections = await getPendingConnections(userId);
       console.log("conn:", connections);
 
-      if (connections.some((u) => u.sender.id === fullUser.id))
+      if (connections.some((u) => u.sender.id === fullUserId))
         setIsPending(true);
-      // if()
     } catch (error) {
       console.log("Error fetching connections:", error);
     }
@@ -197,9 +196,11 @@ const ProfilePage = () => {
     getUser();
     getExperiences();
     getUserConnections();
-    getPendingConn();
+    if (fullUser) {
+      getPendingConn(id, fullUser.id);
+    }
     console.log(isCurrentUser);
-  }, [id, authUser.username, navigate, isCurrentUser]);
+  }, [id, authUser.username, navigate, isCurrentUser, fullUser]);
 
   const userx = {
     name: "John Doe",
@@ -271,11 +272,11 @@ const ProfilePage = () => {
                 component={Link}
                 onClick={() => setOpenConnections(true)}
               >
-                {connectionsList.length} connections
+                {connectionsList?.length} connections
               </Typography>
 
               {!isCurrentUser &&
-                (fullUser.connections.some((u) => u.id === user.id) ? (
+                (fullUser?.connections?.some((u) => u?.id === user?.id) ? (
                   <Button variant="outlined" sx={{ mt: 1 }}>
                     Friends
                   </Button>

@@ -64,7 +64,7 @@ export const AuthProvider = ({ children }) => {
 
       newSocket.emit("connectUser", {
         userId: userData.id,
-        connectedUsers: userData.connections.map((conn) => conn.id),
+        connectedUsers: userData.connections?.map((conn) => conn.id),
       });
     });
 
@@ -115,6 +115,17 @@ export const AuthProvider = ({ children }) => {
         senderId: fullUser.id,
         receiverId,
       });
+    }
+  };
+
+  const register = async (credentials) => {
+    try {
+      const resp = await axiosInstance.post("/auth/register", credentials);
+      console.log("Registration successful", resp.data);
+      return Promise.resolve();
+    } catch (error) {
+      console.error("Registration failed", error);
+      return Promise.reject(error);
     }
   };
 
@@ -178,6 +189,7 @@ export const AuthProvider = ({ children }) => {
         setIsAuthenticated,
         user,
         fullUser,
+        register,
         login,
         logout,
         isLoading,

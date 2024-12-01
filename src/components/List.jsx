@@ -7,10 +7,8 @@ import ListItemText from "@mui/material/ListItemText";
 import {
   AccountBox,
   Article,
- 
   Group,
   Home,
-
   Person,
   Settings,
   Storefront,
@@ -71,7 +69,6 @@ const MyList = ({ setmyMOde, theme, showList, setshowList }) => {
     { title: "Friends", icon: <Person /> },
     { title: "Settings", icon: <Settings /> },
     { title: "Profile", icon: <AccountBox /> },
-    
   ];
 
   return (

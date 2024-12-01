@@ -27,11 +27,11 @@ const AddPost = () => {
   const theme = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const [content, setContent] = useState("");
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, fullUser } = useAuth();
 
   const handleSendPost = () => {
     if (content.trim()) {
-      socket.emit("message", content);
+      socket.emit("message", { content, user: fullUser });
       setContent("");
       setIsOpen(false);
     }
@@ -77,7 +77,9 @@ const AddPost = () => {
               sx={{ mr: "13px" }}
               src="https://i.pinimg.com/474x/1b/61/45/1b614533bde5ad1760664fd6c35dd895.jpg"
             />
-            <Typography variant="body1">Layla Hassan</Typography>
+            <Typography variant="body1">
+              {fullUser.firstname + " " + fullUser.lastname}
+            </Typography>
           </Stack>
 
           <TextField
